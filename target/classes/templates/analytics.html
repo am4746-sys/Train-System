@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Analytics | RailSys Command</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+--bg-beige-primary: #F9F7F2;
+--struct-blue-gray: #4A5D6A;
+--accent-burgundy-cta: #800000;
+--surface-white: #ffffff;
+--border-subtle: #e2e8f0;
+--text-primary: #1e293b;
+--text-secondary: #64748b;
+--status-healthy: #059669;
+--status-warning: #d97706;
+--status-critical: #dc2626;
+--shadow-light: 0 4px 6px -1px rgba(74, 93, 106, 0.1);
+--shadow-medium: 0 10px 15px -3px rgba(74, 93, 106, 0.15);
+--shadow-heavy: 0 20px 25px -5px rgba(74, 93, 106, 0.2);
+--radius-sm: 8px;
+--radius-md: 12px;
+--radius-lg: 20px;
+--radius-xl: 30px;
+--transition-base: all 0.3s ease;
+--transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+body {
+background-color: var(--bg-beige-primary);
+color: var(--struct-blue-gray);
+overflow-x: hidden;
+min-height: 100vh;
+display: flex;
+}
+.sidebar-navigation {
+width: 100px;
+background-color: var(--struct-blue-gray);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 2rem 0;
+position: fixed;
+z-index: 50;
+box-shadow: var(--shadow-heavy);
+border-right: 4px solid var(--accent-burgundy-cta);
+transition: var(--transition-smooth);
+}
+.sidebar-navigation:hover {
+width: 280px;
+align-items: flex-start;
+padding: 2rem 1.5rem;
+}
+.brand-mark {
+width: 50px;
+height: 50px;
+background-color: var(--accent-burgundy-cta);
+border-radius: 14px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--surface-white);
+font-weight: 900;
+font-size: 24px;
+margin-bottom: 3rem;
+transition: var(--transition-smooth);
+flex-shrink: 0;
+}
+.sidebar-navigation:hover .brand-mark {
+width: 100%;
+justify-content: flex-start;
+padding-left: 1rem;
+background-color: transparent;
+color: var(--surface-white);
+font-size: 1.5rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+}
+.brand-mark span {
+display: none;
+white-space: nowrap;
+}
+.sidebar-navigation:hover .brand-mark span {
+display: inline;
+margin-left: 10px;
+}
+.nav-item-list {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+width: 100%;
+}
+.nav-action {
+width: 50px;
+height: 50px;
+border-radius: 12px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--surface-white);
+text-decoration: none;
+transition: var(--transition-base);
+position: relative;
+cursor: pointer;
+}
+.nav-action svg {
+width: 24px;
+height: 24px;
+fill: currentColor;
+flex-shrink: 0;
+}
+.sidebar-navigation:hover .nav-action {
+width: 100%;
+justify-content: flex-start;
+padding-left: 1rem;
+gap: 1rem;
+}
+.nav-action-text {
+display: none;
+font-weight: 700;
+white-space: nowrap;
+text-transform: uppercase;
+letter-spacing: 1px;
+font-size: 0.85rem;
+}
+.sidebar-navigation:hover .nav-action-text {
+display: inline;
+}
+.nav-action:hover, .nav-action.active-nav {
+background-color: var(--bg-beige-primary);
+color: var(--accent-burgundy-cta);
+}
+.nav-action:hover svg, .nav-action.active-nav svg {
+fill: var(--accent-burgundy-cta);
+}
+.main-dashboard-area {
+flex-grow: 1;
+margin-left: 100px;
+padding: 2.5rem 4rem;
+display: flex;
+flex-direction: column;
+gap: 2.5rem;
+transition: var(--transition-smooth);
+}
+.top-executive-bar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background-color: var(--surface-white);
+padding: 1.5rem 3rem;
+border-radius: var(--radius-lg);
+box-shadow: var(--shadow-medium);
+border-bottom: 4px solid var(--accent-burgundy-cta);
+}
+.executive-title {
+display: flex;
+flex-direction: column;
+gap: 0.3rem;
+}
+.executive-title h1 {
+font-size: 1.8rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+.executive-title p {
+font-size: 0.9rem;
+font-weight: 600;
+color: var(--text-secondary);
+}
+.executive-controls {
+display: flex;
+align-items: center;
+gap: 2rem;
+}
+.live-status-pill {
+display: flex;
+align-items: center;
+gap: 0.8rem;
+background-color: var(--bg-beige-primary);
+padding: 0.6rem 1.5rem;
+border-radius: 50px;
+font-weight: 800;
+font-size: 0.85rem;
+color: var(--struct-blue-gray);
+border: 1px solid var(--border-subtle);
+}
+.pulse-indicator {
+width: 10px;
+height: 10px;
+background-color: var(--status-healthy);
+border-radius: 50%;
+box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7);
+animation: pulsing 1.5s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+@keyframes pulsing {
+to {
+box-shadow: 0 0 0 15px rgba(5, 150, 105, 0);
+}
+}
+.btn-terminate-session {
+background-color: var(--accent-burgundy-cta);
+color: var(--surface-white);
+border: none;
+padding: 0.8rem 2rem;
+border-radius: 50px;
+font-weight: 800;
+text-transform: uppercase;
+letter-spacing: 1px;
+cursor: pointer;
+transition: var(--transition-base);
+}
+.btn-terminate-session:hover {
+background-color: var(--struct-blue-gray);
+transform: translateY(-2px);
+box-shadow: var(--shadow-medium);
+}
+.hero-analytics-banner {
+width: 100%;
+height: 280px;
+background: linear-gradient(135deg, rgba(74, 93, 106, 0.85) 0%, rgba(128, 0, 0, 0.7) 100%), url('https://images.unsplash.com/photo-1474487022182-f71f15adad4b?auto=format&fit=crop&w=1920&q=80') center/cover;
+border-radius: var(--radius-xl);
+box-shadow: var(--shadow-heavy);
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: 0 4rem;
+color: var(--surface-white);
+position: relative;
+overflow: hidden;
+}
+.hero-analytics-banner::after {
+content: '';
+position: absolute;
+top: 0; right: 0; bottom: 0; left: 0;
+background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px);
+pointer-events: none;
+}
+.hero-analytics-banner h2 {
+font-size: 3rem;
+font-weight: 900;
+margin-bottom: 0.5rem;
+z-index: 10;
+}
+.hero-analytics-banner p {
+font-size: 1.1rem;
+font-weight: 600;
+opacity: 0.9;
+z-index: 10;
+max-width: 600px;
+line-height: 1.6;
+}
+.kpi-matrix {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 2rem;
+}
+.kpi-node {
+background-color: var(--surface-white);
+padding: 2rem;
+border-radius: var(--radius-lg);
+box-shadow: var(--shadow-medium);
+border-top: 5px solid var(--accent-burgundy-cta);
+display: flex;
+flex-direction: column;
+position: relative;
+overflow: hidden;
+transition: var(--transition-base);
+}
+.kpi-node:hover {
+transform: translateY(-5px);
+box-shadow: var(--shadow-heavy);
+}
+.kpi-icon {
+position: absolute;
+top: 1.5rem;
+right: 1.5rem;
+width: 40px;
+height: 40px;
+fill: var(--bg-beige-primary);
+stroke: var(--struct-blue-gray);
+stroke-width: 1.5;
+opacity: 0.3;
+}
+.kpi-label {
+font-size: 0.85rem;
+font-weight: 800;
+text-transform: uppercase;
+color: var(--text-secondary);
+margin-bottom: 1rem;
+letter-spacing: 1px;
+}
+.kpi-value {
+font-size: 2.8rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+margin-bottom: 0.5rem;
+display: flex;
+align-items:baseline;
+gap:0.5rem;
+}
+.kpi-currency {
+font-size: 1.2rem;
+color: var(--accent-burgundy-cta);
+}
+.kpi-delta {
+font-size: 0.9rem;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 0.3rem;
+}
+.delta-positive { color: var(--status-healthy); }
+.delta-negative { color: var(--status-critical); }
+.delta-neutral { color: var(--status-warning); }
+.visual-dashboard-grid {
+display: grid;
+grid-template-columns: 2fr 1fr;
+gap: 2rem;
+}
+.dashboard-panel {
+background-color: var(--surface-white);
+border-radius: var(--radius-xl);
+padding: 2.5rem;
+box-shadow: var(--shadow-medium);
+}
+.panel-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 2rem;
+padding-bottom: 1rem;
+border-bottom: 2px solid var(--bg-beige-primary);
+}
+.panel-title {
+font-size: 1.2rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+text-transform: uppercase;
+letter-spacing: 1px;
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.panel-title svg {
+width: 24px;
+height: 24px;
+fill: var(--accent-burgundy-cta);
+}
+.panel-filter {
+padding: 0.5rem 1rem;
+border: 2px solid var(--border-subtle);
+border-radius: var(--radius-sm);
+background-color: var(--bg-beige-primary);
+color: var(--struct-blue-gray);
+font-weight: 700;
+outline: none;
+cursor: pointer;
+}
+.chart-wrapper {
+position: relative;
+height: 350px;
+width: 100%;
+}
+.heatmap-grid {
+display: grid;
+grid-template-columns: repeat(12, 1fr);
+gap: 6px;
+background-color: var(--bg-beige-primary);
+padding: 1.5rem;
+border-radius: var(--radius-md);
+border: 2px dashed var(--struct-blue-gray);
+}
+.heat-cell {
+aspect-ratio: 1;
+border-radius: 4px;
+transition: var(--transition-base);
+cursor: crosshair;
+}
+.heat-cell:hover {
+transform: scale(1.3);
+box-shadow: var(--shadow-medium);
+z-index: 10;
+}
+.heat-lvl-0 { background-color: var(--surface-white); border: 1px solid var(--border-subtle); }
+.heat-lvl-1 { background-color: #cbd5e1; }
+.heat-lvl-2 { background-color: #94a3b8; }
+.heat-lvl-3 { background-color: var(--struct-blue-gray); opacity: 0.8; }
+.heat-lvl-4 { background-color: var(--struct-blue-gray); }
+.heat-lvl-5 { background-color: var(--accent-burgundy-cta); }
+.heatmap-legend {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-top: 1.5rem;
+font-size: 0.8rem;
+font-weight: 700;
+color: var(--text-secondary);
+}
+.legend-gradient {
+flex-grow: 1;
+height: 8px;
+background: linear-gradient(to right, var(--surface-white), var(--struct-blue-gray), var(--accent-burgundy-cta));
+margin: 0 1rem;
+border-radius: 4px;
+}
+.secondary-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 2rem;
+}
+.data-table-wrap {
+width: 100%;
+overflow-x: auto;
+}
+.system-table {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0 8px;
+}
+.system-table th {
+background-color: transparent;
+color: var(--text-secondary);
+font-size: 0.8rem;
+font-weight: 800;
+text-transform: uppercase;
+letter-spacing: 1px;
+padding: 1rem;
+text-align: left;
+border-bottom: 2px solid var(--struct-blue-gray);
+}
+.system-table td {
+background-color: var(--bg-beige-primary);
+padding: 1.2rem 1rem;
+font-weight: 600;
+color: var(--struct-blue-gray);
+font-size: 0.95rem;
+}
+.system-table tr td:first-child {
+border-top-left-radius: var(--radius-md);
+border-bottom-left-radius: var(--radius-md);
+border-left: 4px solid var(--struct-blue-gray);
+}
+.system-table tr td:last-child {
+border-top-right-radius: var(--radius-md);
+border-bottom-right-radius: var(--radius-md);
+}
+.system-table tr:hover td {
+background-color: var(--border-subtle);
+}
+.entity-identity {
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.entity-avatar {
+width: 35px;
+height: 35px;
+background-color: var(--struct-blue-gray);
+color: var(--surface-white);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+font-weight: 900;
+font-size: 0.8rem;
+}
+.perf-bar-bg {
+width: 100%;
+height: 8px;
+background-color: var(--surface-white);
+border-radius: 4px;
+overflow: hidden;
+}
+.perf-bar-fill {
+height: 100%;
+background-color: var(--accent-burgundy-cta);
+border-radius: 4px;
+}
+.terminal-console {
+background-color: #0f172a;
+border-radius: var(--radius-md);
+padding: 1.5rem;
+height: 350px;
+overflow-y: auto;
+font-family: 'Courier New', Courier, monospace;
+color: #34d399;
+font-size: 0.85rem;
+line-height: 1.6;
+border: 2px solid var(--struct-blue-gray);
+box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+.console-line {
+margin-bottom: 0.5rem;
+border-bottom: 1px dashed rgba(255,255,255,0.1);
+padding-bottom: 0.5rem;
+}
+.console-time {
+color: #94a3b8;
+margin-right: 10px;
+}
+.toast-container {
+position: fixed;
+bottom: 30px;
+right: 30px;
+display: flex;
+flex-direction: column;
+gap: 1rem;
+z-index: 9999;
+}
+.toast-msg {
+background-color: var(--surface-white);
+color: var(--struct-blue-gray);
+padding: 1.2rem 2rem;
+border-radius: var(--radius-md);
+box-shadow: var(--shadow-heavy);
+border-left: 6px solid var(--status-healthy);
+font-weight: 800;
+transform: translateX(120%);
+transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.toast-msg.show {
+transform: translateX(0);
+}
+.toast-msg svg {
+width: 24px;
+height: 24px;
+fill: var(--status-healthy);
+}
+</style>
+</head>
+<body>
+<nav class="sidebar-navigation">
+<div class="brand-mark">
+R<span>ailSys</span>
+</div>
+<div class="nav-item-list">
+<a href="#" class="nav-action active-nav" title="Executive Dashboard">
+<svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+<span class="nav-action-text">Command Center</span>
+</a>
+<a href="#" class="nav-action" title="Financial Metrics">
+<svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+<span class="nav-action-text">Financial Matrix</span>
+</a>
+<a href="/scheduling" class="nav-action" title="Fleet Deployment">
+<svg viewBox="0 0 24 24"><path d="M12 2c-4.42 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2.23v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zm0 2c3.51 0 4.96.48 5.57 1H6.43c.61-.52 2.06-1 5.57-1zM6 15.5v-7h12v7c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2zm2.5-3.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm7 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+<span class="nav-action-text">Fleet Logistics</span>
+</a>
+<a href="#" class="nav-action" title="System Settings">
+<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+<span class="nav-action-text">Core Configuration</span>
+</a>
+</div>
+</nav>
+<div class="main-dashboard-area">
+<div class="top-executive-bar">
+<div class="executive-title">
+<h1>Executive Strategic Command</h1>
+<p>Authorized Clearance: Tier 1 Administration.</p>
+</div>
+<div class="executive-controls">
+<div class="live-status-pill">
+<div class="pulse-indicator"></div>
+Global Network: SECURE
+</div>
+<button class="btn-terminate-session" id="btnLogoutAction">Terminate Access</button>
+</div>
+</div>
+<div class="hero-analytics-banner">
+<h2>Data-Driven Operational Mastery.</h2>
+<p>Comprehensive visualization of enterprise-wide logistics, financial throughput, and personnel efficiency across all active transit hubs.</p>
+</div>
+<div class="kpi-matrix">
+<div class="kpi-node">
+<svg class="kpi-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+<div class="kpi-label">Daily Revenue Stream</div>
+<div class="kpi-value"><span class="kpi-currency">SAR</span><span class="counter-animate" data-target="342500">0</span></div>
+<div class="kpi-delta delta-positive">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+14.2% Optimization
+</div>
+</div>
+<div class="kpi-node">
+<svg class="kpi-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+<div class="kpi-label">System Occupancy Rate</div>
+<div class="kpi-value"><span class="counter-animate" data-target="96">0</span>%</div>
+<div class="kpi-delta delta-positive">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+Peak Capacity Reached
+</div>
+</div>
+<div class="kpi-node">
+<svg class="kpi-icon" viewBox="0 0 24 24"><path d="M12 2L1 21h22M12 6l7.53 13H4.47M11 10v4h2v-4m-2 6v2h2v-2"/></svg>
+<div class="kpi-label">Active Anomalies</div>
+<div class="kpi-value" style="color: var(--struct-blue-gray);"><span class="counter-animate" data-target="0">0</span></div>
+<div class="kpi-delta delta-neutral">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h12v2H6z"/></svg>
+All nodes functional
+</div>
+</div>
+<div class="kpi-node">
+<svg class="kpi-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zM12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+<div class="kpi-label">Average Delay Margin</div>
+<div class="kpi-value"><span class="counter-animate" data-target="2">0</span><span style="font-size: 1.2rem; align-self:center; margin-left:5px;">MIN</span></div>
+<div class="kpi-delta delta-positive">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+Below threshold
+</div>
+</div>
+</div>
+<div class="visual-dashboard-grid">
+<div class="dashboard-panel">
+<div class="panel-header">
+<div class="panel-title">
+<svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+Revenue Trajectory Analysis
+</div>
+<select class="panel-filter" id="chartTimeFilter">
+<option value="Q1">Q1 Fiscal Year</option>
+<option value="Q2">Q2 Fiscal Year</option>
+<option value="Q3">Q3 Fiscal Year</option>
+</select>
+</div>
+<div class="chart-wrapper">
+<canvas id="mainRevenueChart"></canvas>
+</div>
+</div>
+<div class="dashboard-panel">
+<div class="panel-header">
+<div class="panel-title">
+<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+Node Density Heatmap
+</div>
+</div>
+<div class="heatmap-grid" id="densityMatrix"></div>
+<div class="heatmap-legend">
+<span>Idle</span>
+<div class="legend-gradient"></div>
+<span>Peak</span>
+</div>
+<div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--struct-blue-gray); font-weight: 600; text-align: center; border-top: 1px dashed var(--border-subtle); padding-top: 1rem;">
+*Real-time geographical tracking active.
+</div>
+</div>
+</div>
+<div class="secondary-grid">
+<div class="dashboard-panel" style="padding: 0; overflow: hidden;">
+<div class="panel-header" style="padding: 2.5rem 2.5rem 1rem 2.5rem; margin-bottom: 0;">
+<div class="panel-title">
+<svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+Operator Efficiency Matrix
+</div>
+</div>
+<div class="data-table-wrap" style="padding: 0 2.5rem 2.5rem 2.5rem;">
+<table class="system-table">
+<thead>
+<tr>
+<th>Operator Designation</th>
+<th>Sector</th>
+<th>Clearance Rate</th>
+<th>System Health</th>
+</tr>
+</thead>
+<tbody id="operatorTableBody"></tbody>
+</table>
+</div>
+</div>
+<div class="dashboard-panel">
+<div class="panel-header">
+<div class="panel-title">
+<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/></svg>
+Central Diagnostic Terminal
+</div>
+</div>
+<div class="terminal-console" id="sysTerminalLogs"></div>
+</div>
+</div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+const SYSTEM_CONFIG = {
+    chartInstance: null,
+    dataSets: {
+        Q1: [180000, 210000, 250000, 290000, 280000, 310000],
+        Q2: [310000, 340000, 330000, 380000, 420000, 450000],
+        Q3: [450000, 480000, 520000, 500000, 580000, 620000]
+    },
+    operatorData: [
+        { id: 'OPR-ALPHA', sector: 'Riyadh Core', rate: '99.8%', health: 98 },
+        { id: 'OPR-BETA', sector: 'Coastal Div', rate: '97.5%', health: 85 },
+        { id: 'OPR-GAMMA', sector: 'Northern Line', rate: '98.9%', health: 92 },
+        { id: 'OPR-DELTA', sector: 'Qassim Hub', rate: '100%', health: 100 }
+    ],
+    logDictionary: [
+        "ROUTING_SYNC: Confirming geographic vectors for TX-900.",
+        "SEC_CHECK: No breach detected in local subnet.",
+        "MEM_ALLOC: Flushing temporary ticketing cache.",
+        "OP_STATUS: Operator-Alpha reports optimal platform loading.",
+        "DB_QUERY: Syncing passenger manifest with regional nodes.",
+        "AI_HEURISTIC: Model predicts 5% increase in traffic tomorrow."
+    ]
+};
+
+function animateCounters() {
+    const counters = document.querySelectorAll('.counter-animate');
+    counters.forEach(function(counter) {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const step = Math.ceil(target / (duration / 20)) || 1;
+        let current = 0;
+        const update = setInterval(function() {
+            current += step;
+            if (current >= target) {
+                counter.innerText = target.toLocaleString();
+                clearInterval(update);
+            } else {
+                counter.innerText = current.toLocaleString();
+            }
+        }, 20);
+    });
+}
+
+function renderRevenueChart(datasetKey) {
+    const ctx = document.getElementById('mainRevenueChart').getContext('2d');
+    if(SYSTEM_CONFIG.chartInstance) SYSTEM_CONFIG.chartInstance.destroy();
+    const data = SYSTEM_CONFIG.dataSets[datasetKey];
+    SYSTEM_CONFIG.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+            datasets: [{
+                label: 'Transaction Volume (SAR)',
+                data: data,
+                borderColor: '#800000',
+                backgroundColor: 'rgba(128, 0, 0, 0.05)',
+                borderWidth: 4,
+                pointBackgroundColor: '#4A5D6A',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#4A5D6A',
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 16, weight: 'bold' },
+                    padding: 15,
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(74, 93, 106, 0.1)', borderDash: [5, 5] },
+                    ticks: { color: '#64748b', font: { weight: 'bold' }, callback: function(value) { return value / 1000 + 'k'; } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#64748b', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+}
+
+function buildHeatmap() {
+    const matrix = document.getElementById('densityMatrix');
+    matrix.innerHTML = '';
+    for (let i = 0; i < 96; i++) {
+        const cell = document.createElement('div');
+        const rand = Math.random();
+        let lvl = '0';
+        if(rand > 0.9) lvl = '5';
+        else if(rand > 0.7) lvl = '4';
+        else if(rand > 0.5) lvl = '3';
+        else if(rand > 0.3) lvl = '2';
+        else if(rand > 0.1) lvl = '1';
+        cell.className = 'heat-cell heat-lvl-' + lvl;
+        matrix.appendChild(cell);
+    }
+}
+
+function populateOperatorMatrix() {
+    const tbody = document.getElementById('operatorTableBody');
+    tbody.innerHTML = '';
+    SYSTEM_CONFIG.operatorData.forEach(function(op) {
+        const tr = document.createElement('tr');
+        const ini = op.id.split('-')[1].charAt(0);
+        tr.innerHTML = 
+            '<td>' +
+                '<div class="entity-identity">' +
+                    '<div class="entity-avatar">' + ini + '</div>' +
+                    '<strong>' + op.id + '</strong>' +
+                '</div>' +
+            '</td>' +
+            '<td>' + op.sector + '</td>' +
+            '<td><strong style="color: var(--struct-blue-gray);">' + op.rate + '</strong></td>' +
+            '<td>' +
+                '<div style="display: flex; align-items: center; gap: 10px;">' +
+                    '<div class="perf-bar-bg"><div class="perf-bar-fill" style="width: ' + op.health + '%"></div></div>' +
+                    '<span style="font-weight: 800; font-size: 0.8rem; width: 40px; text-align: right;">' + op.health + '%</span>' +
+                '</div>' +
+            '</td>';
+        tbody.appendChild(tr);
+    });
+}
+
+function runDiagnosticStream() {
+    const terminal = document.getElementById('sysTerminalLogs');
+    setInterval(function() {
+        const time = new Date().toISOString().split('T')[1].substring(0,11);
+        const msg = SYSTEM_CONFIG.logDictionary[Math.floor(Math.random() * SYSTEM_CONFIG.logDictionary.length)];
+        const line = document.createElement('div');
+        line.className = 'console-line';
+        line.innerHTML = '<span class="console-time">[' + time + ']</span> <span style="color: var(--surface-white);">sysadmin@core:~#</span> ' + msg;
+        terminal.appendChild(line);
+        if(terminal.children.length > 50) terminal.removeChild(terminal.firstChild);
+        terminal.scrollTop = terminal.scrollHeight;
+    }, 2500);
+}
+
+function createSystemToast(message) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> ' + message;
+    container.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 100);
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { container.removeChild(toast); }, 500);
+    }, 4000);
+}
+
+function bindExecutiveEvents() {
+    document.getElementById('btnLogoutAction').addEventListener('click', function() {
+        window.location.href = '/login';
+    });
+    document.getElementById('chartTimeFilter').addEventListener('change', function(e) {
+        renderRevenueChart(e.target.value);
+        createSystemToast('Financial metrics updated to ' + e.target.options[e.target.selectedIndex].text);
+    });
+    setInterval(buildHeatmap, 8000);
+}
+
+function bootExecutiveTerminal() {
+    animateCounters();
+    renderRevenueChart('Q1');
+    buildHeatmap();
+    populateOperatorMatrix();
+    runDiagnosticStream();
+    bindExecutiveEvents();
+    setTimeout(function() { createSystemToast("System Diagnostics Complete. All nodes functional."); }, 1500);
+}
+
+document.addEventListener('DOMContentLoaded', bootExecutiveTerminal);
+
+/*]]>*/
+</script>
+</body>
+</html>

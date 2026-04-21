@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Portal | Smart Rail Systems</title>
+<style>
+:root {
+--bg-beige: #F9F7F2;
+--struct-blue: #4A5D6A;
+--cta-burgundy: #800000;
+--white-pure: #ffffff;
+--border-color: #d1d5db;
+--success-color: #059669;
+--danger-color: #dc2626;
+--warning-color: #d97706;
+--shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+--shadow-heavy: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+--radius-sm: 8px;
+--radius-md: 12px;
+--radius-lg: 24px;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+body {
+background-color: var(--bg-beige);
+color: var(--struct-blue);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+overflow-x: hidden;
+}
+.system-navbar {
+background-color: var(--struct-blue);
+padding: 1rem 3rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 6px solid var(--cta-burgundy);
+position: sticky;
+top: 0;
+z-index: 50;
+box-shadow: var(--shadow-light);
+}
+.brand-container {
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.brand-logo {
+width: 40px;
+height: 40px;
+background-color: var(--white-pure);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--cta-burgundy);
+font-weight: 900;
+font-size: 20px;
+}
+.brand-text {
+color: var(--white-pure);
+font-size: 1.5rem;
+font-weight: 800;
+letter-spacing: 0.05em;
+text-transform: uppercase;
+}
+.nav-controls {
+display: flex;
+align-items: center;
+gap: 2rem;
+}
+.station-indicator {
+color: var(--white-pure);
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+background-color: rgba(255, 255, 255, 0.1);
+padding: 0.5rem 1rem;
+border-radius: var(--radius-sm);
+}
+.indicator-dot {
+width: 10px;
+height: 10px;
+background-color: #34d399;
+border-radius: 50%;
+box-shadow: 0 0 10px #34d399;
+}
+.btn-logout {
+background-color: var(--cta-burgundy);
+color: var(--white-pure);
+border: none;
+padding: 0.75rem 2rem;
+border-radius: var(--radius-sm);
+font-weight: 700;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.2s ease;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+.btn-logout:hover {
+background-color: #600000;
+transform: translateY(-2px);
+}
+.dashboard-layout {
+display: grid;
+grid-template-columns: 320px 1fr;
+gap: 2rem;
+padding: 2rem 3rem;
+flex-grow: 1;
+}
+.sidebar-panel {
+background-color: var(--white-pure);
+border-radius: var(--radius-lg);
+padding: 2rem;
+box-shadow: var(--shadow-heavy);
+height: calc(100vh - 120px);
+position: sticky;
+top: 100px;
+display: flex;
+flex-direction: column;
+}
+.employee-profile {
+text-align: center;
+padding-bottom: 2rem;
+border-bottom: 2px solid var(--bg-beige);
+margin-bottom: 2rem;
+}
+.avatar-circle {
+width: 100px;
+height: 100px;
+background-color: var(--struct-blue);
+color: var(--bg-beige);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 2.5rem;
+font-weight: 900;
+margin: 0 auto 1rem auto;
+border: 4px solid var(--bg-beige);
+box-shadow: 0 0 0 4px var(--struct-blue);
+}
+.employee-name {
+color: var(--cta-burgundy);
+font-size: 1.5rem;
+font-weight: 900;
+margin-bottom: 0.5rem;
+}
+.employee-id {
+color: var(--struct-blue);
+font-weight: 600;
+font-size: 0.9rem;
+margin-bottom: 1rem;
+}
+.shift-status {
+display: inline-block;
+background-color: #d1fae5;
+color: var(--success-color);
+padding: 0.25rem 1rem;
+border-radius: 9999px;
+font-weight: 800;
+font-size: 0.8rem;
+text-transform: uppercase;
+border: 1px solid var(--success-color);
+}
+.sidebar-menu {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+flex-grow: 1;
+}
+.menu-btn {
+background-color: var(--bg-beige);
+color: var(--struct-blue);
+border: 2px solid transparent;
+padding: 1rem;
+border-radius: var(--radius-sm);
+font-weight: 700;
+text-align: left;
+cursor: pointer;
+transition: all 0.3s ease;
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.menu-btn:hover, .menu-btn.active {
+background-color: var(--struct-blue);
+color: var(--white-pure);
+border-color: var(--struct-blue);
+}
+.main-content {
+display: flex;
+flex-direction: column;
+gap: 2rem;
+}
+.kpi-container {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 1.5rem;
+}
+.kpi-card {
+background-color: var(--white-pure);
+padding: 1.5rem;
+border-radius: var(--radius-md);
+box-shadow: var(--shadow-light);
+border-top: 4px solid var(--cta-burgundy);
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
+.kpi-title {
+color: var(--struct-blue);
+font-size: 0.9rem;
+font-weight: 700;
+text-transform: uppercase;
+margin-bottom: 0.5rem;
+}
+.kpi-value {
+color: var(--cta-burgundy);
+font-size: 2.5rem;
+font-weight: 900;
+}
+.kpi-trend {
+font-size: 0.85rem;
+font-weight: 600;
+color: var(--success-color);
+margin-top: 0.5rem;
+}
+.module-card {
+background-color: var(--white-pure);
+border-radius: var(--radius-lg);
+padding: 2.5rem;
+box-shadow: var(--shadow-heavy);
+}
+.module-header {
+font-size: 1.5rem;
+font-weight: 900;
+color: var(--struct-blue);
+margin-bottom: 2rem;
+padding-bottom: 1rem;
+border-bottom: 2px solid var(--bg-beige);
+text-transform: uppercase;
+}
+.train-visual-banner {
+width: 100%;
+height: 250px;
+background-image: url('https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=1600&q=80');
+background-size: cover;
+background-position: center;
+border-radius: var(--radius-md);
+margin-bottom: 2rem;
+border: 4px solid var(--struct-blue);
+}
+.validator-grid {
+display: grid;
+grid-template-columns: 2fr 1fr;
+gap: 2rem;
+align-items: flex-end;
+}
+.form-element {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+margin-bottom: 1.5rem;
+}
+.form-label {
+font-weight: 700;
+color: var(--struct-blue);
+font-size: 0.9rem;
+text-transform: uppercase;
+}
+.form-input, .form-select {
+padding: 1rem;
+border: 2px solid var(--border-color);
+border-radius: var(--radius-sm);
+font-size: 1rem;
+background-color: var(--bg-beige);
+color: var(--struct-blue);
+font-weight: 600;
+transition: border-color 0.3s ease;
+}
+.form-input:focus, .form-select:focus {
+outline: none;
+border-color: var(--cta-burgundy);
+}
+.btn-primary {
+background-color: var(--cta-burgundy);
+color: var(--white-pure);
+border: none;
+padding: 1.2rem;
+border-radius: var(--radius-sm);
+font-weight: 800;
+font-size: 1rem;
+text-transform: uppercase;
+cursor: pointer;
+width: 100%;
+transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+background-color: #600000;
+}
+.btn-secondary {
+background-color: var(--struct-blue);
+color: var(--white-pure);
+border: none;
+padding: 1rem;
+border-radius: var(--radius-sm);
+font-weight: 700;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+.btn-secondary:hover {
+background-color: #3b4a55;
+}
+.validation-display {
+margin-top: 2rem;
+padding: 2rem;
+border-radius: var(--radius-md);
+font-weight: 800;
+font-size: 1.2rem;
+text-align: center;
+display: none;
+border: 3px solid transparent;
+text-transform: uppercase;
+}
+.status-valid {
+background-color: #ecfdf5;
+color: var(--success-color);
+border-color: var(--success-color);
+}
+.status-invalid {
+background-color: #fef2f2;
+color: var(--danger-color);
+border-color: var(--danger-color);
+}
+.registry-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 1.5rem;
+}
+.interactive-seat-map {
+display: grid;
+grid-template-columns: repeat(12, 1fr);
+gap: 0.75rem;
+background-color: var(--bg-beige);
+padding: 2rem;
+border-radius: var(--radius-md);
+border: 2px dashed var(--struct-blue);
+margin-top: 1.5rem;
+}
+.seat-unit {
+aspect-ratio: 1;
+background-color: var(--white-pure);
+border: 2px solid var(--border-color);
+border-radius: 6px;
+display: flex;
+justify-content: center;
+align-items: center;
+font-weight: 800;
+font-size: 0.85rem;
+cursor: pointer;
+transition: all 0.2s ease;
+color: var(--struct-blue);
+}
+.seat-unit:hover {
+transform: scale(1.15);
+border-color: var(--cta-burgundy);
+z-index: 10;
+box-shadow: var(--shadow-light);
+}
+.seat-occupied {
+background-color: var(--struct-blue);
+color: var(--white-pure);
+border-color: var(--struct-blue);
+cursor: not-allowed;
+opacity: 0.7;
+}
+.seat-occupied:hover {
+transform: none;
+box-shadow: none;
+}
+.seat-active {
+background-color: var(--cta-burgundy);
+color: var(--white-pure);
+border-color: var(--cta-burgundy);
+transform: scale(1.15);
+box-shadow: var(--shadow-light);
+}
+.manifest-toolbar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1.5rem;
+}
+.search-box {
+width: 400px;
+}
+.data-grid {
+width: 100%;
+border-collapse: collapse;
+}
+.data-grid th {
+background-color: var(--struct-blue);
+color: var(--white-pure);
+padding: 1.2rem;
+text-align: left;
+font-size: 0.85rem;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+.data-grid td {
+padding: 1.2rem;
+border-bottom: 1px solid var(--border-color);
+font-weight: 600;
+color: var(--struct-blue);
+}
+.data-grid tbody tr:hover {
+background-color: var(--bg-beige);
+}
+.status-badge {
+padding: 0.4rem 1rem;
+border-radius: 9999px;
+font-size: 0.75rem;
+font-weight: 800;
+text-transform: uppercase;
+color: var(--white-pure);
+}
+.badge-ok { background-color: var(--success-color); }
+.badge-warn { background-color: var(--warning-color); }
+.badge-err { background-color: var(--danger-color); }
+.log-terminal {
+background-color: #111827;
+color: #10b981;
+padding: 1.5rem;
+border-radius: var(--radius-md);
+font-family: 'Courier New', Courier, monospace;
+height: 300px;
+overflow-y: auto;
+font-size: 0.9rem;
+line-height: 1.6;
+border: 4px solid var(--struct-blue);
+margin-top: 1.5rem;
+}
+</style>
+</head>
+<body>
+<nav class="system-navbar">
+<div class="brand-container">
+<div class="brand-logo">R</div>
+<div class="brand-text">Rail Systems Operations</div>
+</div>
+<div class="nav-controls">
+<div class="station-indicator">
+<div class="indicator-dot"></div>
+Terminal: Riyadh Hub
+</div>
+<button class="btn-logout" id="logoutTrigger">Terminate Session</button>
+</div>
+</nav>
+<main class="dashboard-layout">
+<aside class="sidebar-panel">
+<div class="employee-profile">
+<div class="avatar-circle">D</div>
+<div class="employee-name">Dima Al-Otaibi</div>
+<div class="employee-id">Role: Support Team Leader</div>
+<div class="shift-status">System Active</div>
+</div>
+<div class="sidebar-menu">
+<button class="menu-btn active" id="navValidator">Ticket Validator</button>
+<button class="menu-btn" id="navRegistry">Walk-in Registry</button>
+<button class="menu-btn" id="navManifest">Passenger Manifest</button>
+<button class="menu-btn" id="navTerminal">Shift Terminal Logs</button>
+</div>
+</aside>
+<section class="main-content">
+<div class="train-visual-banner"></div>
+<div class="kpi-container">
+<div class="kpi-card">
+<div class="kpi-title">Verified Tickets</div>
+<div class="kpi-value" id="kpiVerified">142</div>
+<div class="kpi-trend">Tracking active boards</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-title">Walk-in Registrations</div>
+<div class="kpi-value" id="kpiWalkin">28</div>
+<div class="kpi-trend">Manual profiles created</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-title">System Anomalies</div>
+<div class="kpi-value" style="color: var(--struct-blue);" id="kpiErrors">0</div>
+<div class="kpi-trend" style="color: var(--struct-blue);">All systems operational</div>
+</div>
+</div>
+<div class="module-card" id="viewValidator">
+<div class="module-header">Live Ticket Validation Engine</div>
+<div class="validator-grid">
+<div class="form-element">
+<label class="form-label">Scan or Enter PNR / Ticket Reference</label>
+<input type="text" id="pnrInput" class="form-input" placeholder="Example: TKT-8492" autocomplete="off">
+</div>
+<button class="btn-primary" id="btnValidate">Execute Verification</button>
+</div>
+<div id="validationResult" class="validation-display"></div>
+</div>
+<div class="module-card" id="viewRegistry" style="display: none;">
+<div class="module-header">Manual Passenger Registration</div>
+<form id="manualRegistryForm">
+<div class="registry-grid">
+<div class="form-element">
+<label class="form-label">Full Legal Name</label>
+<input type="text" id="regName" class="form-input" required>
+</div>
+<div class="form-element">
+<label class="form-label">National ID / Passport Number</label>
+<input type="text" id="regId" class="form-input" required>
+</div>
+<div class="form-element">
+<label class="form-label">Origin Station</label>
+<select id="regOrigin" class="form-select">
+<option value="Riyadh">Riyadh Central</option>
+<option value="Qassim">Qassim Hub</option>
+</select>
+</div>
+<div class="form-element">
+<label class="form-label">Destination Station</label>
+<select id="regDest" class="form-select">
+<option value="Dammam">Dammam Port</option>
+<option value="Jeddah">Jeddah Coastal</option>
+</select>
+</div>
+</div>
+<div class="module-header" style="font-size: 1.2rem; margin-top: 2rem; margin-bottom: 1rem;">Interactive Carriage Allocation</div>
+<div class="interactive-seat-map" id="carriageMap"></div>
+<input type="hidden" id="selectedSeatVal">
+<div style="margin-top: 2rem;">
+<button type="button" class="btn-primary" id="btnIssueTicket">Generate Boarding Pass</button>
+</div>
+</form>
+</div>
+<div class="module-card" id="viewManifest" style="display: none;">
+<div class="module-header">Real-time Passenger Manifest</div>
+<div class="manifest-toolbar">
+<div class="form-element search-box" style="margin-bottom: 0;">
+<input type="text" id="manifestSearch" class="form-input" placeholder="Search by name, PNR, or seat...">
+</div>
+<button class="btn-secondary" id="btnRefreshManifest">Force Sync Data</button>
+</div>
+<table class="data-grid">
+<thead>
+<tr>
+<th>PNR Reference</th>
+<th>Passenger Name</th>
+<th>Route Data</th>
+<th>Seat Alloc.</th>
+<th>Current Status</th>
+<th>System Action</th>
+</tr>
+</thead>
+<tbody id="manifestTableBody"></tbody>
+</table>
+</div>
+<div class="module-card" id="viewTerminal" style="display: none;">
+<div class="module-header">Diagnostic Terminal & Shift Handover</div>
+<div class="validator-grid">
+<div class="form-element">
+<label class="form-label">Append Manual System Log / Note</label>
+<input type="text" id="manualLogInput" class="form-input" placeholder="Enter diagnostic command or shift note...">
+</div>
+<button class="btn-primary" id="btnAppendLog">Inject Log Entry</button>
+</div>
+<div class="log-terminal" id="sysConsole"></div>
+</div>
+</section>
+</main>
+<script>
+const SYSTEM_STATE = {
+tickets: 142,
+walkins: 28,
+errors: 0,
+activeView: 'viewValidator',
+selectedSeat: null
+};
+const PASSENGER_DATABASE = [
+{ pnr: 'TKT-1055', name: 'Rawan Larozy', route: 'Riyadh to Dammam', seat: 'C12', status: 'VERIFIED' },
+{ pnr: 'TKT-2088', name: 'Renad Al-Shuraym', route: 'Riyadh to Jeddah', seat: 'A04', status: 'PENDING' },
+{ pnr: 'TKT-3091', name: 'Deema Alharbi', route: 'Riyadh to Qassim', seat: 'B08', status: 'VOIDED' },
+{ pnr: 'TKT-4102', name: 'Maysoon Alabdullah', route: 'Riyadh to Mecca', seat: 'D15', status: 'VERIFIED' },
+{ pnr: 'TKT-5519', name: 'Dina Altaweel', route: 'Riyadh to Medina', seat: 'A01', status: 'PENDING' }
+];
+const TERMINAL_LOGS = [
+"SYS_BOOT: Initiating secure connection to Mainframe DB...",
+"AUTH_SUCCESS: Support Team Leader Dima authenticated.",
+"HW_STATUS: Ticket Printer [ONLINE] | Barcode Scanner [ONLINE]",
+"SYNC_COMPLETE: Loaded 5 active manifest records.",
+"MONITORING_ACTIVE: Awaiting staff operational input."
+];
+function initNavigation() {
+const buttons = {
+navValidator: 'viewValidator',
+navRegistry: 'viewRegistry',
+navManifest: 'viewManifest',
+navTerminal: 'viewTerminal'
+};
+for (const [btnId, viewId] of Object.entries(buttons)) {
+const btn = document.getElementById(btnId);
+btn.addEventListener('click', function() {
+document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+this.classList.add('active');
+document.querySelectorAll('.module-card').forEach(v => v.style.display = 'none');
+document.getElementById(viewId).style.display = 'block';
+SYSTEM_STATE.activeView = viewId;
+if(viewId === 'viewManifest') renderManifestTable(PASSENGER_DATABASE);
+if(viewId === 'viewTerminal') renderTerminalLogs();
+});
+}
+}
+function initCarriageMap() {
+const mapContainer = document.getElementById('carriageMap');
+mapContainer.innerHTML = '';
+for (let i = 1; i <= 60; i++) {
+const seatNode = document.createElement('div');
+seatNode.className = 'seat-unit';
+const rowCode = String.fromCharCode(65 + Math.floor((i - 1) / 12));
+const numCode = ((i - 1) % 12) + 1;
+const seatId = `${rowCode}${numCode.toString().padStart(2, '0')}`;
+seatNode.textContent = seatId;
+if (i % 7 === 0 || i % 13 === 0) {
+seatNode.classList.add('seat-occupied');
+} else {
+seatNode.addEventListener('click', function() {
+document.querySelectorAll('.seat-unit').forEach(n => n.classList.remove('seat-active'));
+this.classList.add('seat-active');
+document.getElementById('selectedSeatVal').value = seatId;
+SYSTEM_STATE.selectedSeat = seatId;
+});
+}
+mapContainer.appendChild(seatNode);
+}
+}
+function executeValidation() {
+const inputStr = document.getElementById('pnrInput').value.trim().toUpperCase();
+const displayNode = document.getElementById('validationResult');
+displayNode.style.display = 'block';
+if (!inputStr) {
+displayNode.className = 'validation-display status-invalid';
+displayNode.textContent = 'SYSTEM ERROR: NO PNR PROVIDED.';
+updateKpi('errors', 1);
+writeLog(`VAL_ERR: Empty validation attempt blocked.`);
+return;
+}
+const record = PASSENGER_DATABASE.find(p => p.pnr === inputStr);
+if (record) {
+if (record.status === 'VOIDED') {
+displayNode.className = 'validation-display status-invalid';
+displayNode.textContent = `ALERT: TICKET ${record.pnr} HAS BEEN VOIDED. ENTRY DENIED.`;
+writeLog(`VAL_WARN: Attempted use of voided ticket ${record.pnr}`);
+} else {
+displayNode.className = 'validation-display status-valid';
+displayNode.textContent = `SUCCESS: ${record.name} | ROUTE: ${record.route} | SEAT: ${record.seat}`;
+if(record.status === 'PENDING') {
+record.status = 'VERIFIED';
+updateKpi('tickets', 1);
+writeLog(`VAL_OK: Ticket ${record.pnr} status updated to VERIFIED.`);
+}
+}
+} else {
+displayNode.className = 'validation-display status-invalid';
+displayNode.textContent = `CRITICAL: TICKET REFERENCE ${inputStr} NOT FOUND IN DATABASE.`;
+updateKpi('errors', 1);
+writeLog(`VAL_FAIL: Unknown PNR ${inputStr} scanned.`);
+}
+document.getElementById('pnrInput').value = '';
+}
+function processManualRegistry() {
+const nName = document.getElementById('regName').value.trim();
+const nId = document.getElementById('regId').value.trim();
+const nOrigin = document.getElementById('regOrigin').value;
+const nDest = document.getElementById('regDest').value;
+const nSeat = document.getElementById('selectedSeatVal').value;
+if (!nName || !nId || !nSeat) {
+alert("VALIDATION FAULT: All fields and seat allocation are mandatory.");
+writeLog("REG_ERR: Incomplete manual registration attempt.");
+return;
+}
+const generatedPnr = 'TKT-' + Math.floor(Math.random() * 8999 + 1000);
+const newPassenger = {
+pnr: generatedPnr,
+name: nName,
+route: `${nOrigin} to ${nDest}`,
+seat: nSeat,
+status: 'VERIFIED'
+};
+PASSENGER_DATABASE.unshift(newPassenger);
+updateKpi('walkins', 1);
+updateKpi('tickets', 1);
+writeLog(`REG_OK: Manual profile created for ${nName}. Assigned PNR: ${generatedPnr}`);
+alert(`REGISTRATION SUCCESSFUL.\nBoarding Pass Generated:\nPNR: ${generatedPnr}\nSeat: ${nSeat}`);
+document.getElementById('manualRegistryForm').reset();
+document.getElementById('selectedSeatVal').value = '';
+initCarriageMap();
+}
+function renderManifestTable(dataArray) {
+const tbody = document.getElementById('manifestTableBody');
+tbody.innerHTML = '';
+dataArray.forEach(p => {
+const tr = document.createElement('tr');
+let badgeType = p.status === 'VERIFIED' ? 'badge-ok' : p.status === 'VOIDED' ? 'badge-err' : 'badge-warn';
+tr.innerHTML = `
+<td><strong>${p.pnr}</strong></td>
+<td>${p.name}</td>
+<td>${p.route}</td>
+<td><strong>${p.seat}</strong></td>
+<td><span class="status-badge ${badgeType}">${p.status}</span></td>
+<td>
+<button class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="executeVoid('${p.pnr}')">VOID</button>
+</td>
+`;
+tbody.appendChild(tr);
+});
+}
+function executeVoid(pnrCode) {
+if (confirm(`SECURITY OVERRIDE: Are you certain you wish to void ticket ${pnrCode}?`)) {
+const target = PASSENGER_DATABASE.find(x => x.pnr === pnrCode);
+if (target) {
+target.status = 'VOIDED';
+renderManifestTable(PASSENGER_DATABASE);
+writeLog(`OVERRIDE_OK: Ticket ${pnrCode} manually voided by staff.`);
+}
+}
+}
+function handleManifestSearch() {
+const q = document.getElementById('manifestSearch').value.toLowerCase();
+const filtered = PASSENGER_DATABASE.filter(p => 
+p.name.toLowerCase().includes(q) || 
+p.pnr.toLowerCase().includes(q) || 
+p.seat.toLowerCase().includes(q)
+);
+renderManifestTable(filtered);
+}
+function renderTerminalLogs() {
+const consoleNode = document.getElementById('sysConsole');
+consoleNode.innerHTML = '';
+TERMINAL_LOGS.forEach(l => {
+const div = document.createElement('div');
+div.textContent = `admin@ryd-core:~# [${new Date().toISOString().split('T')[1].substring(0,8)}] ${l}`;
+consoleNode.appendChild(div);
+});
+consoleNode.scrollTop = consoleNode.scrollHeight;
+}
+function writeLog(message) {
+TERMINAL_LOGS.push(message);
+if (SYSTEM_STATE.activeView === 'viewTerminal') renderTerminalLogs();
+}
+function injectManualLog() {
+const val = document.getElementById('manualLogInput').value.trim();
+if (val) {
+writeLog(`STAFF_NOTE: ${val}`);
+document.getElementById('manualLogInput').value = '';
+}
+}
+function updateKpi(key, amount) {
+SYSTEM_STATE[key] += amount;
+const map = { tickets: 'kpiVerified', walkins: 'kpiWalkin', errors: 'kpiErrors' };
+document.getElementById(map[key]).textContent = SYSTEM_STATE[key];
+}
+function bindEvents() {
+document.getElementById('logoutTrigger').addEventListener('click', () => window.location.href = '/login');
+document.getElementById('btnValidate').addEventListener('click', executeValidation);
+document.getElementById('btnIssueTicket').addEventListener('click', processManualRegistry);
+document.getElementById('manifestSearch').addEventListener('input', handleManifestSearch);
+document.getElementById('btnRefreshManifest').addEventListener('click', () => {
+writeLog("SYNC_REQ: Force syncing manifest data with core DB.");
+renderManifestTable(PASSENGER_DATABASE);
+});
+document.getElementById('btnAppendLog').addEventListener('click', injectManualLog);
+document.getElementById('pnrInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') executeValidation(); });
+document.getElementById('manualLogInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') injectManualLog(); });
+}
+function bootstrapSystem() {
+initNavigation();
+initCarriageMap();
+bindEvents();
+}
+document.addEventListener('DOMContentLoaded', bootstrapSystem);
+</script>
+</body>
+</html>

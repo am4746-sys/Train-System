@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Logistics Framework | High-Speed Rail System</title>
+<style>
+:root {
+--bg-primary-beige: #F9F7F2;
+--struct-blue-gray: #4A5D6A;
+--accent-burgundy: #800000;
+--white-surface: #ffffff;
+--gold-subtle: #D2B48C;
+--text-main: #2D3748;
+--transition-ultra: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+--shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+--radius-xl: 30px;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+scroll-behavior: smooth;
+}
+body {
+background-color: var(--bg-primary-beige);
+color: var(--text-main);
+overflow-x: hidden;
+}
+#bg-canvas {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+opacity: 0.6;
+}
+.navbar-terminal {
+position: fixed;
+top: 0;
+width: 100%;
+padding: 1.8rem 6%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+z-index: 5000;
+transition: var(--transition-ultra);
+}
+.navbar-terminal.scrolled {
+background-color: var(--struct-blue-gray);
+padding: 1.2rem 6%;
+border-bottom: 6px solid var(--accent-burgundy);
+box-shadow: var(--shadow-heavy);
+}
+.brand-identity {
+display: flex;
+align-items: center;
+gap: 1.2rem;
+}
+.brand-icon-wrapper {
+width: 55px;
+height: 55px;
+background-color: var(--accent-burgundy);
+border-radius: 12px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--white-surface);
+font-weight: 900;
+font-size: 26px;
+transform: rotate(-5deg);
+transition: var(--transition-ultra);
+}
+.brand-label {
+font-size: 2rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+text-transform: uppercase;
+letter-spacing: 4px;
+}
+.navbar-terminal.scrolled .brand-label {
+color: var(--white-surface);
+}
+.navbar-terminal.scrolled .brand-icon-wrapper {
+background-color: var(--white-surface);
+color: var(--accent-burgundy);
+}
+.nav-link-container {
+display: flex;
+gap: 3.5rem;
+align-items: center;
+}
+.nav-link-item {
+color: var(--struct-blue-gray);
+text-decoration: none;
+font-weight: 800;
+text-transform: uppercase;
+letter-spacing: 2px;
+position: relative;
+font-size: 0.95rem;
+}
+.navbar-terminal.scrolled .nav-link-item {
+color: var(--bg-primary-beige);
+}
+.nav-link-item::after {
+content: '';
+position: absolute;
+bottom: -10px;
+left: 0;
+width: 0;
+height: 5px;
+background-color: var(--accent-burgundy);
+transition: var(--transition-ultra);
+}
+.nav-link-item:hover::after {
+width: 100%;
+}
+.btn-gateway {
+background-color: var(--accent-burgundy);
+color: var(--white-surface);
+padding: 1.2rem 3.5rem;
+border-radius: 50px;
+text-decoration: none;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 2px;
+box-shadow: 0 15px 35px rgba(128, 0, 0, 0.3);
+transition: var(--transition-ultra);
+border: 2px solid transparent;
+}
+.btn-gateway:hover {
+transform: translateY(-8px) scale(1.05);
+background-color: var(--struct-blue-gray);
+border-color: var(--accent-burgundy);
+}
+.hero-engine {
+height: 110vh;
+display: flex;
+align-items: center;
+padding: 0 10%;
+position: relative;
+background: linear-gradient(to bottom, rgba(249, 247, 242, 0.1), var(--bg-primary-beige)), url('https://images.unsplash.com/photo-1532105956691-17f8ab73a11c?auto=format&fit=crop&w=1920&q=80') center/cover;
+}
+.hero-content-wrapper {
+max-width: 1000px;
+z-index: 10;
+}
+.hero-tag {
+background-color: var(--struct-blue-gray);
+color: var(--white-surface);
+padding: 0.6rem 2rem;
+border-radius: 50px;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 3px;
+display: inline-block;
+margin-bottom: 2.5rem;
+font-size: 0.85rem;
+}
+.hero-main-title {
+font-size: 7rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+line-height: 0.9;
+margin-bottom: 2.5rem;
+}
+.hero-main-title span {
+color: var(--accent-burgundy);
+display: block;
+}
+.hero-description-text {
+font-size: 1.6rem;
+line-height: 1.7;
+color: var(--struct-blue-gray);
+opacity: 0.9;
+margin-bottom: 4.5rem;
+max-width: 750px;
+border-left: 12px solid var(--accent-burgundy);
+padding-left: 3rem;
+}
+.hero-cta-group {
+display: flex;
+gap: 2.5rem;
+}
+.architecture-section {
+padding: 12rem 10%;
+background-color: var(--white-surface);
+border-top: 20px solid var(--struct-blue-gray);
+position: relative;
+}
+.section-indicator {
+text-align: center;
+margin-bottom: 8rem;
+}
+.indicator-title {
+font-size: 4rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+text-transform: uppercase;
+letter-spacing: 2px;
+margin-bottom: 1.5rem;
+}
+.indicator-hr {
+width: 150px;
+height: 8px;
+background-color: var(--accent-burgundy);
+margin: 0 auto;
+border-radius: 10px;
+}
+.features-container {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 4rem;
+}
+.arch-card {
+background-color: var(--bg-primary-beige);
+padding: 6rem 4rem;
+border-radius: var(--radius-xl);
+text-align: center;
+transition: var(--transition-ultra);
+border: 2px solid transparent;
+position: relative;
+overflow: hidden;
+}
+.arch-card::before {
+content: '';
+position: absolute;
+top: 0; left: 0; width: 100%; height: 100%;
+background: radial-gradient(circle at top right, rgba(128, 0, 0, 0.05), transparent);
+}
+.arch-card:hover {
+transform: translateY(-30px);
+background-color: var(--white-surface);
+border-color: var(--accent-burgundy);
+box-shadow: var(--shadow-heavy);
+}
+.arch-card-icon {
+width: 100px;
+height: 100px;
+background-color: var(--struct-blue-gray);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 0 auto 3rem auto;
+transition: var(--transition-ultra);
+}
+.arch-card:hover .arch-card-icon {
+background-color: var(--accent-burgundy);
+transform: scale(1.2) rotate(15deg);
+}
+.arch-card h3 {
+font-size: 2rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+margin-bottom: 1.5rem;
+text-transform: uppercase;
+}
+.arch-card p {
+font-size: 1.2rem;
+line-height: 1.8;
+opacity: 0.8;
+}
+.svg-icon-set {
+width: 50px;
+height: 50px;
+fill: var(--white-surface);
+}
+.live-fleet-tracker {
+padding: 10rem 10%;
+background-color: var(--bg-primary-beige);
+}
+.fleet-grid-wrap {
+background-color: var(--white-surface);
+border-radius: var(--radius-xl);
+padding: 5rem;
+box-shadow: var(--shadow-heavy);
+border-bottom: 15px solid var(--accent-burgundy);
+}
+.fleet-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 3rem;
+}
+.fleet-table th {
+background-color: var(--struct-blue-gray);
+color: var(--white-surface);
+padding: 2rem;
+text-align: left;
+text-transform: uppercase;
+letter-spacing: 2px;
+font-weight: 900;
+}
+.fleet-table td {
+padding: 2rem;
+border-bottom: 2px solid var(--bg-primary-beige);
+font-size: 1.1rem;
+font-weight: 700;
+}
+.fleet-table tr:hover {
+background-color: var(--bg-primary-beige);
+}
+.status-tag {
+padding: 0.5rem 1.5rem;
+border-radius: 50px;
+font-size: 0.8rem;
+font-weight: 900;
+text-transform: uppercase;
+}
+.status-online { background-color: #DEF7EC; color: #03543F; }
+.status-transit { background-color: #E1EFFE; color: #1E429F; }
+.support-structure-section {
+padding: 12rem 10%;
+background-color: var(--bg-primary-beige);
+}
+.team-layout-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 3.5rem;
+}
+.personnel-card {
+background-color: var(--white-surface);
+padding: 5rem 3rem;
+border-radius: 25px;
+text-align: center;
+box-shadow: 0 15px 45px rgba(0,0,0,0.06);
+transition: var(--transition-ultra);
+border-bottom: 10px solid var(--struct-blue-gray);
+}
+.personnel-card:hover {
+transform: translateY(-20px);
+border-bottom-color: var(--accent-burgundy);
+box-shadow: var(--shadow-heavy);
+}
+.personnel-avatar-mock {
+width: 100px;
+height: 100px;
+background-color: var(--bg-primary-beige);
+border-radius: 50%;
+margin: 0 auto 2.5rem auto;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 2.5rem;
+font-weight: 900;
+color: var(--accent-burgundy);
+border: 5px solid var(--struct-blue-gray);
+}
+.personnel-name {
+font-size: 1.8rem;
+font-weight: 900;
+color: var(--struct-blue-gray);
+margin-bottom: 0.8rem;
+}
+.personnel-role {
+font-size: 0.9rem;
+font-weight: 800;
+color: var(--accent-burgundy);
+text-transform: uppercase;
+letter-spacing: 3px;
+}
+.global-footer {
+background-color: var(--struct-blue-gray);
+color: var(--bg-primary-beige);
+padding: 8rem 10% 4rem 10%;
+border-top: 15px solid var(--accent-burgundy);
+}
+.footer-main-columns {
+display: grid;
+grid-template-columns: 2fr 1fr 1fr;
+gap: 6rem;
+margin-bottom: 6rem;
+}
+.footer-column-brand h2 {
+font-size: 3rem;
+font-weight: 900;
+color: var(--white-surface);
+margin-bottom: 2rem;
+}
+.footer-column-brand p {
+font-size: 1.2rem;
+line-height: 2;
+opacity: 0.8;
+max-width: 500px;
+}
+.footer-column-links h4 {
+font-size: 1.4rem;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 2px;
+margin-bottom: 2.5rem;
+color: var(--white-surface);
+}
+.footer-column-links ul {
+list-style: none;
+}
+.footer-column-links li {
+margin-bottom: 1.5rem;
+}
+.footer-column-links a {
+color: var(--bg-primary-beige);
+text-decoration: none;
+font-weight: 700;
+opacity: 0.7;
+transition: var(--transition-ultra);
+}
+.footer-column-links a:hover {
+opacity: 1;
+padding-left: 15px;
+color: var(--white-surface);
+}
+.footer-legal-bottom {
+text-align: center;
+padding-top: 4rem;
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+font-size: 1rem;
+font-weight: 700;
+opacity: 0.5;
+}
+@keyframes pulse-ring {
+0% { transform: scale(0.33); }
+80%, 100% { opacity: 0; }
+}
+.floating-widget {
+position: fixed;
+bottom: 40px;
+right: 40px;
+width: 70px;
+height: 70px;
+background-color: var(--accent-burgundy);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+color: white;
+z-index: 9999;
+box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+cursor: pointer;
+}
+.floating-widget::after {
+content: '';
+position: absolute;
+width: 100%;
+height: 100%;
+border: 5px solid var(--accent-burgundy);
+border-radius: 50%;
+animation: pulse-ring 2s infinite;
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav class="navbar-terminal" id="terminal-nav">
+<div class="brand-identity">
+<div class="brand-icon-wrapper">R</div>
+<div class="brand-label">RailSys</div>
+</div>
+<div class="nav-link-container">
+<a href="#architecture" class="nav-link-item">System Arch</a>
+<a href="#fleet" class="nav-link-item">Fleet Tracker</a>
+<a href="#support" class="nav-link-item">Personnel</a>
+<a href="/login" class="btn-gateway">Access Portal</a>
+</div>
+</nav>
+<section class="hero-engine">
+<div class="hero-content-wrapper">
+<div class="hero-tag">Framework Edition v4.2.1</div>
+<h1 class="hero-main-title">Strategic<br><span>Logistics Logic.</span></h1>
+<p class="hero-description-text">An enterprise-grade operational ecosystem engineered for large-scale rail transit management. Integrating multi-threaded data synchronization with high-availability reservation protocols for seamless passenger experiences.</p>
+<div class="hero-cta-group">
+<a href="/login" class="btn-gateway" style="padding: 1.5rem 5rem; font-size: 1.2rem;">Initialize Session</a>
+<a href="#architecture" class="nav-link-item" style="align-self: center; border-bottom: 2px solid var(--accent-burgundy); padding-bottom: 5px;">View Framework Docs</a>
+</div>
+</div>
+</section>
+<section class="architecture-section" id="architecture">
+<div class="section-indicator">
+<p style="font-weight: 800; color: var(--accent-burgundy); text-transform: uppercase; letter-spacing: 5px; margin-bottom: 1rem;">Core Engineering</p>
+<h2 class="indicator-title">System Architecture</h2>
+<div class="indicator-hr"></div>
+</div>
+<div class="features-container">
+<div class="arch-card">
+<div class="arch-card-icon">
+<svg class="svg-icon-set" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+</div>
+<h3>Modular Design</h3>
+<p>Decoupled multi-layered architecture allowing for infinite scalability and high fault-tolerance in heavy-load traffic scenarios.</p>
+</div>
+<div class="arch-card">
+<div class="arch-card-icon">
+<svg class="svg-icon-set" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+</div>
+<h3>AES Encryption</h3>
+<p>End-to-end cryptographic security protocols protecting passenger identity and corporate transaction data across all endpoints.</p>
+</div>
+<div class="arch-card">
+<div class="arch-card-icon">
+<svg class="svg-icon-set" viewBox="0 0 24 24"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+</div>
+<h3>Data Analytics</h3>
+<p>Real-time heuristic analysis of fleet performance and station occupancy, optimized for executive decision-making support.</p>
+</div>
+</div>
+</section>
+<section class="live-fleet-tracker" id="fleet">
+<div class="section-indicator">
+<h2 class="indicator-title">Fleet Deployment Status</h2>
+<div class="indicator-hr"></div>
+</div>
+<div class="fleet-grid-wrap">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+<h3 style="font-size: 1.8rem; font-weight: 900; color: var(--struct-blue-gray);">Live Operational Manifest</h3>
+<div style="font-weight: 800; color: var(--accent-burgundy);">Active Units: <span id="unit-count">48</span></div>
+</div>
+<table class="fleet-table">
+<thead>
+<tr>
+<th>Fleet ID</th>
+<th>Command Unit</th>
+<th>Assigned Path</th>
+<th>Velocity</th>
+<th>Clearance Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TX-900X</td>
+<td>Operator-Alpha</td>
+<td>Riyadh ➔ Jeddah</td>
+<td>310 km/h</td>
+<td><span class="status-tag status-transit">In Transit</span></td>
+</tr>
+<tr>
+<td>TX-450B</td>
+<td>Operator-Gamma</td>
+<td>Riyadh ➔ Dammam</td>
+<td>280 km/h</td>
+<td><span class="status-tag status-online">Online / Ready</span></td>
+</tr>
+<tr>
+<td>TX-210K</td>
+<td>Operator-Delta</td>
+<td>Makkah ➔ Medina</td>
+<td>300 km/h</td>
+<td><span class="status-tag status-transit">In Transit</span></td>
+</tr>
+<tr>
+<td>TX-115S</td>
+<td>Operator-Beta</td>
+<td>Hail ➔ Jouf</td>
+<td>260 km/h</td>
+<td><span class="status-tag status-online">Online / Ready</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="support-structure-section" id="support">
+<div class="section-indicator">
+<p style="font-weight: 800; color: var(--accent-burgundy); text-transform: uppercase; letter-spacing: 5px; margin-bottom: 1rem;">Academic Personnel</p>
+<h2 class="indicator-title">The Support Team</h2>
+<div class="indicator-hr"></div>
+</div>
+<div class="team-layout-grid">
+<div class="personnel-card">
+<div class="personnel-avatar-mock">D</div>
+<h3 class="personnel-name">Deema Attallah Al-Otaibi</h3>
+<p class="personnel-role">Project Leader</p>
+</div>
+<div class="personnel-card">
+<div class="personnel-avatar-mock">R</div>
+<h3 class="personnel-name">Rawan Abdulkarim Larozy</h3>
+<p class="personnel-role">Support Member</p>
+</div>
+<div class="personnel-card">
+<div class="personnel-avatar-mock">R</div>
+<h3 class="personnel-name">Renad Khaled Al-Shuraym</h3>
+<p class="personnel-role">Support Member</p>
+</div>
+<div class="personnel-card">
+<div class="personnel-avatar-mock">D</div>
+<h3 class="personnel-name">Deema Ibrahim Alharbi</h3>
+<p class="personnel-role">Support Member</p>
+</div>
+<div class="personnel-card">
+<div class="personnel-avatar-mock">M</div>
+<h3 class="personnel-name">Maysoon Abdullah Alabdullah</h3>
+<p class="personnel-role">Support Member</p>
+</div>
+<div class="personnel-card">
+<div class="personnel-avatar-mock">D</div>
+<h3 class="personnel-name">Dina Mohammed Altaweel</h3>
+<p class="personnel-role">Support Member</p>
+</div>
+</div>
+</section>
+<footer class="global-footer">
+<div class="footer-main-columns">
+<div class="footer-column-brand">
+<h2>RAILSYS CONNECT</h2>
+<p>A sophisticated enterprise framework developed under the academic supervision of the College of Computer and Information Sciences at Imam Mohammad ibn Saud Islamic University.</p>
+</div>
+<div class="footer-column-links">
+<h4>System Modules</h4>
+<ul>
+<li><a href="/login">Executive Analytics</a></li>
+<li><a href="/login">Fleet Scheduling</a></li>
+<li><a href="/login">Terminal Dashboard</a></li>
+<li><a href="/login">Passenger Portal</a></li>
+</ul>
+</div>
+<div class="footer-column-links">
+<h4>Support Resources</h4>
+<ul>
+<li><a href="#">UML Documentation</a></li>
+<li><a href="#">Security Protocol</a></li>
+<li><a href="#">Architecture Map</a></li>
+<li><a href="#">API Repository</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-legal-bottom">
+&copy; 2026 Academic Engineering Portfolio | Riyadh, Kingdom of Saudi Arabia
+</div>
+</footer>
+<div class="floating-widget" onclick="window.scrollTo(0,0)">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</div>
+<script>
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particlesArray;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+class Particle {
+constructor(x, y, directionX, directionY, size, color) {
+this.x = x; this.y = y; this.directionX = directionX;
+this.directionY = directionY; this.size = size; this.color = color;
+}
+draw() {
+ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+ctx.fillStyle = this.color; ctx.fill();
+}
+update() {
+if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+this.x += this.directionX; this.y += this.directionY;
+this.draw();
+}
+}
+function initParticles() {
+particlesArray = [];
+let numberOfParticles = (canvas.height * canvas.width) / 12000;
+for (let i = 0; i < numberOfParticles; i++) {
+let size = (Math.random() * 5) + 1;
+let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+let directionX = (Math.random() * 2) - 1;
+let directionY = (Math.random() * 2) - 1;
+let color = '#4A5D6A';
+particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+}
+}
+function animateParticles() {
+requestAnimationFrame(animateParticles);
+ctx.clearRect(0, 0, innerWidth, innerHeight);
+for (let i = 0; i < particlesArray.length; i++) {
+particlesArray[i].update();
+}
+connectParticles();
+}
+function connectParticles() {
+for (let a = 0; a < particlesArray.length; a++) {
+for (let b = a; b < particlesArray.length; b++) {
+let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+if (distance < (canvas.width/7) * (canvas.height/7)) {
+ctx.strokeStyle = 'rgba(74, 93, 106, 0.1)'; ctx.lineWidth = 1;
+ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
+}
+}
+}
+}
+window.addEventListener('scroll', () => {
+const nav = document.getElementById('terminal-nav');
+if (window.scrollY > 80) nav.classList.add('scrolled');
+else nav.classList.remove('scrolled');
+});
+window.addEventListener('resize', () => {
+canvas.width = innerWidth; canvas.height = innerHeight;
+initParticles();
+});
+initParticles(); animateParticles();
+</script>
+</body>
+</html>
