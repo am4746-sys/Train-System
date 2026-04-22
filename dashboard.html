@@ -771,7 +771,7 @@ const map = { tickets: 'kpiVerified', walkins: 'kpiWalkin', errors: 'kpiErrors' 
 document.getElementById(map[key]).textContent = SYSTEM_STATE[key];
 }
 function bindEvents() {
-document.getElementById('logoutTrigger').addEventListener('click', () => window.location.href = '/login');
+document.getElementById('logoutTrigger').addEventListener('click', () => window.location.href = 'login.html');
 document.getElementById('btnValidate').addEventListener('click', executeValidation);
 document.getElementById('btnIssueTicket').addEventListener('click', processManualRegistry);
 document.getElementById('manifestSearch').addEventListener('input', handleManifestSearch);
