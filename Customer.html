@@ -865,7 +865,7 @@ document.getElementById('btnCloseModal').addEventListener('click', () => {
 document.getElementById('invoiceModal').classList.remove('active');
 setTimeout(() => window.location.reload(), 500);
 });
-document.getElementById('triggerLogout').addEventListener('click', () => window.location.href = '/login');
+document.getElementById('triggerLogout').addEventListener('click', () => window.location.href = 'login.html');
 const d = new Date();
 d.setDate(d.getDate() + 1);
 document.getElementById('dateTravel').valueAsDate = d;
