@@ -917,7 +917,7 @@ tag.textContent = `TX-900 | ${speed}KM/H | NEXT: ${pos.next.toUpperCase()}`;
 requestAnimationFrame(executeAnimationLoop);
 }
 function bindOperationalEvents() {
-document.getElementById('btnLogout').addEventListener('click', () => window.location.href = '/login');
+document.getElementById('btnLogout').addEventListener('click', () => window.location.href = 'login.html');
 document.getElementById('btnSyncWeather').addEventListener('click', cycleMeteorology);
 document.getElementById('rosterFilter').addEventListener('change', constructRoster);
 document.getElementById('btnForceDispatch').addEventListener('click', () => {
