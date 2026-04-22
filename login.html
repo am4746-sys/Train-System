@@ -532,9 +532,9 @@ localStorage.setItem('userName', id);
 const role = document.getElementById('authRole').value;
 
 setTimeout(() => {
-if(role === 'manager') window.location.href = '/analytics';
-else if(role === 'employee') window.location.href = '/dashboard';
-else window.location.href = '/customer';
+if(role === 'manager') window.location.href = 'analytics.html';
+else if(role === 'employee') window.location.href = 'dashboard.html';
+else window.location.href = 'customer.html';
 }, 1500);
 }
 
