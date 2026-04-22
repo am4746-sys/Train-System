@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passenger Portal | Advanced Transit Reservation</title>
+<style>
+:root {
+--bg-primary: #F9F7F2;
+--struct-main: #4A5D6A;
+--accent-action: #800000;
+--surface-white: #ffffff;
+--border-dim: #e2e8f0;
+--text-muted: #64748b;
+--status-green: #10b981;
+--status-gold: #d97706;
+--shadow-float: 0 20px 40px -10px rgba(74, 93, 106, 0.15);
+--radius-md: 16px;
+--radius-lg: 24px;
+--radius-xl: 32px;
+--trans-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+body {
+background-color: var(--bg-primary);
+color: var(--struct-main);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+.portal-nav {
+background-color: var(--surface-white);
+padding: 1.5rem 5%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+border-bottom: 4px solid var(--accent-action);
+position: sticky;
+top: 0;
+z-index: 1000;
+}
+.brand-cluster {
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+.brand-mark {
+width: 48px;
+height: 48px;
+background-color: var(--struct-main);
+border-radius: 14px;
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--surface-white);
+font-weight: 900;
+font-size: 22px;
+transform: rotate(-5deg);
+}
+.brand-title {
+font-size: 1.6rem;
+font-weight: 900;
+color: var(--struct-main);
+letter-spacing: 2px;
+text-transform: uppercase;
+}
+.nav-actions {
+display: flex;
+align-items: center;
+gap: 2rem;
+}
+.loyalty-pill {
+background-color: var(--bg-primary);
+border: 2px solid var(--struct-main);
+padding: 0.6rem 1.5rem;
+border-radius: 50px;
+font-weight: 800;
+display: flex;
+align-items: center;
+gap: 0.8rem;
+font-size: 0.9rem;
+}
+.loyalty-pill svg {
+width: 18px;
+height: 18px;
+fill: var(--status-gold);
+}
+.btn-terminate {
+background-color: transparent;
+color: var(--accent-action);
+border: 2px solid var(--accent-action);
+padding: 0.6rem 1.8rem;
+border-radius: 50px;
+font-weight: 800;
+text-transform: uppercase;
+cursor: pointer;
+transition: var(--trans-smooth);
+}
+.btn-terminate:hover {
+background-color: var(--accent-action);
+color: var(--surface-white);
+transform: translateY(-2px);
+}
+.portal-layout {
+display: grid;
+grid-template-columns: 350px 1fr;
+gap: 3rem;
+padding: 3rem 5%;
+flex-grow: 1;
+}
+.profile-sidebar {
+background-color: var(--surface-white);
+border-radius: var(--radius-lg);
+padding: 2.5rem;
+box-shadow: var(--shadow-float);
+height: fit-content;
+position: sticky;
+top: 120px;
+border-top: 8px solid var(--struct-main);
+}
+.user-avatar-wrap {
+position: relative;
+width: 120px;
+height: 120px;
+margin: 0 auto 1.5rem auto;
+}
+.user-avatar {
+width: 100%;
+height: 100%;
+background-color: var(--bg-primary);
+border: 4px solid var(--struct-main);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 3rem;
+font-weight: 900;
+color: var(--accent-action);
+}
+.tier-badge {
+position: absolute;
+bottom: 0;
+right: 0;
+background-color: var(--status-gold);
+color: var(--surface-white);
+width: 35px;
+height: 35px;
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+border: 3px solid var(--surface-white);
+}
+.user-details {
+text-align: center;
+margin-bottom: 2rem;
+padding-bottom: 2rem;
+border-bottom: 2px dashed var(--border-dim);
+}
+.user-name {
+font-size: 1.4rem;
+font-weight: 900;
+color: var(--struct-main);
+margin-bottom: 0.5rem;
+}
+.user-id {
+font-size: 0.9rem;
+font-weight: 700;
+color: var(--text-muted);
+font-family: monospace;
+}
+.stats-container {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+}
+.stat-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background-color: var(--bg-primary);
+padding: 1rem 1.5rem;
+border-radius: var(--radius-md);
+}
+.stat-label {
+font-weight: 700;
+font-size: 0.85rem;
+text-transform: uppercase;
+color: var(--struct-main);
+}
+.stat-value {
+font-weight: 900;
+color: var(--accent-action);
+font-size: 1.2rem;
+}
+.main-booking-area {
+display: flex;
+flex-direction: column;
+gap: 3rem;
+}
+.hero-visual {
+width: 100%;
+height: 300px;
+background: linear-gradient(to right, rgba(74, 93, 106, 0.9), rgba(74, 93, 106, 0.4)), url('https://images.unsplash.com/photo-1558285549-2a05f15cfde2?auto=format&fit=crop&w=1600&q=80') center/cover;
+border-radius: var(--radius-lg);
+display: flex;
+align-items: center;
+padding: 4rem;
+color: var(--surface-white);
+box-shadow: var(--shadow-float);
+}
+.hero-visual h1 {
+font-size: 2.8rem;
+font-weight: 900;
+margin-bottom: 1rem;
+max-width: 500px;
+line-height: 1.2;
+}
+.booking-wizard {
+background-color: var(--surface-white);
+border-radius: var(--radius-lg);
+padding: 3rem;
+box-shadow: var(--shadow-float);
+}
+.wizard-header {
+font-size: 1.8rem;
+font-weight: 900;
+color: var(--struct-main);
+margin-bottom: 2.5rem;
+display: flex;
+align-items: center;
+gap: 1rem;
+text-transform: uppercase;
+}
+.wizard-header svg {
+width: 32px;
+height: 32px;
+fill: var(--accent-action);
+}
+.input-matrix {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 2rem;
+margin-bottom: 3rem;
+}
+.input-wrapper {
+display: flex;
+flex-direction: column;
+gap: 0.8rem;
+}
+.input-label {
+font-weight: 800;
+font-size: 0.9rem;
+text-transform: uppercase;
+color: var(--struct-main);
+letter-spacing: 1px;
+}
+.field-element {
+width: 100%;
+padding: 1.2rem;
+border: 2px solid var(--border-dim);
+border-radius: var(--radius-md);
+font-size: 1.1rem;
+font-weight: 600;
+color: var(--struct-main);
+background-color: var(--bg-primary);
+transition: var(--trans-smooth);
+appearance: none;
+cursor: pointer;
+}
+.field-element:focus {
+outline: none;
+border-color: var(--accent-action);
+background-color: var(--surface-white);
+box-shadow: 0 0 0 4px rgba(128, 0, 0, 0.05);
+}
+.date-element {
+background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%234A5D6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+background-repeat: no-repeat;
+background-position: right 1rem center;
+}
+.select-element {
+background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%234A5D6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+background-repeat: no-repeat;
+background-position: right 1rem center;
+}
+.fare-calculation-panel {
+background-color: var(--struct-main);
+border-radius: var(--radius-md);
+padding: 2.5rem;
+color: var(--surface-white);
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 3rem;
+box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+.fare-title {
+font-size: 1.2rem;
+font-weight: 800;
+margin-bottom: 0.5rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+.fare-subtitle {
+font-size: 0.9rem;
+opacity: 0.8;
+}
+.fare-total {
+font-size: 3.5rem;
+font-weight: 900;
+color: var(--bg-primary);
+}
+.seat-map-section {
+background-color: var(--bg-primary);
+border-radius: var(--radius-lg);
+padding: 3rem;
+border: 2px dashed var(--struct-main);
+margin-bottom: 3rem;
+}
+.carriage-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 2rem;
+}
+.carriage-title {
+font-size: 1.4rem;
+font-weight: 900;
+color: var(--struct-main);
+text-transform: uppercase;
+}
+.carriage-legend {
+display: flex;
+gap: 1.5rem;
+}
+.legend-item {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+font-size: 0.9rem;
+font-weight: 700;
+}
+.legend-box {
+width: 20px;
+height: 20px;
+border-radius: 4px;
+}
+.lb-avail { background-color: var(--surface-white); border: 2px solid var(--struct-main); }
+.lb-occ { background-color: var(--border-dim); }
+.lb-sel { background-color: var(--accent-action); }
+.seat-grid-matrix {
+display: grid;
+grid-template-columns: repeat(14, 1fr);
+gap: 1rem;
+justify-items: center;
+background-color: var(--surface-white);
+padding: 2rem;
+border-radius: var(--radius-md);
+box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+.seat-node {
+width: 45px;
+height: 55px;
+background-color: var(--surface-white);
+border: 2px solid var(--struct-main);
+border-radius: 8px 8px 16px 16px;
+display: flex;
+justify-content: center;
+align-items: center;
+font-weight: 900;
+font-size: 0.8rem;
+color: var(--struct-main);
+cursor: pointer;
+position: relative;
+transition: var(--trans-smooth);
+}
+.seat-node::after {
+content: '';
+position: absolute;
+top: 5px;
+left: 8px;
+right: 8px;
+height: 12px;
+background-color: var(--bg-primary);
+border-radius: 4px;
+transition: var(--trans-smooth);
+}
+.seat-node:hover {
+transform: translateY(-5px);
+border-color: var(--accent-action);
+color: var(--accent-action);
+box-shadow: 0 5px 15px rgba(128,0,0,0.2);
+}
+.seat-node.occupied {
+background-color: var(--border-dim);
+border-color: var(--border-dim);
+color: var(--text-muted);
+cursor: not-allowed;
+opacity: 0.6;
+}
+.seat-node.occupied::after {
+background-color: var(--text-muted);
+opacity: 0.2;
+}
+.seat-node.occupied:hover {
+transform: none;
+box-shadow: none;
+}
+.seat-node.selected {
+background-color: var(--accent-action);
+border-color: var(--accent-action);
+color: var(--surface-white);
+transform: translateY(-5px);
+box-shadow: 0 10px 20px rgba(128,0,0,0.3);
+}
+.seat-node.selected::after {
+background-color: rgba(255,255,255,0.3);
+}
+.seat-status-banner {
+text-align: center;
+margin-top: 2rem;
+font-size: 1.2rem;
+font-weight: 900;
+color: var(--struct-main);
+background-color: var(--surface-white);
+padding: 1rem;
+border-radius: var(--radius-md);
+border: 2px solid var(--struct-main);
+}
+.action-process-btn {
+width: 100%;
+background-color: var(--accent-action);
+color: var(--surface-white);
+border: none;
+padding: 1.5rem;
+border-radius: var(--radius-md);
+font-size: 1.2rem;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 3px;
+cursor: pointer;
+transition: var(--trans-smooth);
+position: relative;
+overflow: hidden;
+}
+.action-process-btn:hover {
+background-color: #600000;
+box-shadow: 0 15px 30px rgba(128,0,0,0.3);
+transform: translateY(-2px);
+}
+.history-section {
+background-color: var(--surface-white);
+border-radius: var(--radius-lg);
+padding: 3rem;
+box-shadow: var(--shadow-float);
+}
+.history-table {
+width: 100%;
+border-collapse: collapse;
+}
+.history-table th {
+background-color: var(--struct-main);
+color: var(--surface-white);
+padding: 1.5rem;
+text-align: left;
+text-transform: uppercase;
+letter-spacing: 1px;
+font-size: 0.9rem;
+}
+.history-table td {
+padding: 1.5rem;
+border-bottom: 1px solid var(--border-dim);
+font-weight: 700;
+color: var(--struct-main);
+}
+.history-table tr:hover {
+background-color: var(--bg-primary);
+}
+.status-label {
+padding: 0.5rem 1.2rem;
+border-radius: 50px;
+font-size: 0.8rem;
+font-weight: 900;
+text-transform: uppercase;
+}
+.status-completed { background-color: #dcfce7; color: #166534; }
+.status-upcoming { background-color: #e0e7ff; color: #3730a3; }
+.overlay-modal {
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100%;
+background-color: rgba(74, 93, 106, 0.9);
+z-index: 5000;
+display: flex;
+justify-content: center;
+align-items: center;
+opacity: 0;
+pointer-events: none;
+transition: var(--trans-smooth);
+backdrop-filter: blur(8px);
+}
+.overlay-modal.active {
+opacity: 1;
+pointer-events: all;
+}
+.ticket-invoice-card {
+background-color: var(--surface-white);
+width: 650px;
+border-radius: var(--radius-xl);
+overflow: hidden;
+transform: translateY(50px);
+transition: var(--trans-smooth);
+box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+}
+.overlay-modal.active .ticket-invoice-card {
+transform: translateY(0);
+}
+.invoice-top {
+background-color: var(--struct-main);
+color: var(--surface-white);
+padding: 3rem;
+text-align: center;
+position: relative;
+border-bottom: 8px solid var(--accent-action);
+}
+.invoice-top h2 {
+font-size: 2.5rem;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 2px;
+margin-bottom: 0.5rem;
+}
+.invoice-top p {
+font-size: 1.1rem;
+opacity: 0.8;
+font-family: monospace;
+}
+.invoice-barcode {
+position: absolute;
+top: 20px;
+right: 30px;
+}
+.invoice-barcode svg {
+width: 60px;
+height: 60px;
+fill: var(--surface-white);
+opacity: 0.5;
+}
+.invoice-body {
+padding: 3rem;
+background-color: var(--bg-primary);
+}
+.invoice-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 2rem;
+margin-bottom: 3rem;
+}
+.invoice-data-block {
+background-color: var(--surface-white);
+padding: 1.5rem;
+border-radius: var(--radius-md);
+border: 1px solid var(--border-dim);
+}
+.invoice-data-label {
+font-size: 0.8rem;
+font-weight: 800;
+color: var(--text-muted);
+text-transform: uppercase;
+margin-bottom: 0.5rem;
+}
+.invoice-data-val {
+font-size: 1.2rem;
+font-weight: 900;
+color: var(--struct-main);
+}
+.invoice-footer {
+padding: 2rem 3rem;
+background-color: var(--surface-white);
+display: flex;
+gap: 1.5rem;
+}
+.btn-secondary {
+flex: 1;
+background-color: transparent;
+color: var(--struct-main);
+border: 2px solid var(--struct-main);
+padding: 1.2rem;
+border-radius: var(--radius-md);
+font-weight: 800;
+text-transform: uppercase;
+cursor: pointer;
+transition: var(--trans-smooth);
+}
+.btn-secondary:hover {
+background-color: var(--struct-main);
+color: var(--surface-white);
+}
+</style>
+</head>
+<body>
+<nav class="portal-nav">
+<div class="brand-cluster">
+<div class="brand-mark">RC</div>
+<div class="brand-title">Passenger Gateway</div>
+</div>
+<div class="nav-actions">
+<div class="loyalty-pill">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+Gold Member
+</div>
+<button class="btn-terminate" id="triggerLogout">End Session</button>
+</div>
+</nav>
+<main class="portal-layout">
+<aside class="profile-sidebar">
+<div class="user-avatar-wrap">
+<div class="user-avatar" id="avatarInitial">P</div>
+<div class="tier-badge">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+</div>
+</div>
+<div class="user-details">
+<div class="user-name" id="displayUserName">Authorized User</div>
+<div class="user-id">ID: USR-49201-X</div>
+</div>
+<div class="stats-container">
+<div class="stat-row">
+<span class="stat-label">Reward Balance</span>
+<span class="stat-value">12,450</span>
+</div>
+<div class="stat-row">
+<span class="stat-label">Trips Completed</span>
+<span class="stat-value">24</span>
+</div>
+<div class="stat-row">
+<span class="stat-label">Next Tier At</span>
+<span class="stat-value" style="color: var(--struct-main);">15,000</span>
+</div>
+</div>
+</aside>
+<section class="main-booking-area">
+<div class="hero-visual">
+<h1>Design your next high-speed journey across the Kingdom.</h1>
+</div>
+<div class="booking-wizard">
+<div class="wizard-header">
+<svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+Journey Configuration
+</div>
+<div class="input-matrix">
+<div class="input-wrapper">
+<label class="input-label">Departure Terminal</label>
+<select class="field-element select-element" id="nodeOrigin">
+<option value="RIY" data-km="0">Riyadh Central Hub</option>
+<option value="QAS" data-km="350">Qassim Station</option>
+<option value="HAI" data-km="650">Hail Transit Center</option>
+</select>
+</div>
+<div class="input-wrapper">
+<label class="input-label">Destination Terminal</label>
+<select class="field-element select-element" id="nodeDest">
+<option value="DAM" data-km="400">Dammam Port Station</option>
+<option value="JED" data-km="950">Jeddah Coastal Hub</option>
+<option value="MED" data-km="850">Medina Holy Station</option>
+</select>
+</div>
+<div class="input-wrapper">
+<label class="input-label">Travel Date</label>
+<input type="date" class="field-element date-element" id="dateTravel">
+</div>
+<div class="input-wrapper">
+<label class="input-label">Cabin Configuration</label>
+<select class="field-element select-element" id="nodeClass">
+<option value="1.0">Economy Standard</option>
+<option value="1.5">Business Premium (+50%)</option>
+<option value="2.5">First Class Suite (+150%)</option>
+</select>
+</div>
+</div>
+<div class="fare-calculation-panel">
+<div>
+<div class="fare-title">Dynamic Fare Logic Active</div>
+<div class="fare-subtitle">Pricing adjusts in real-time based on distance matrix and cabin tier.</div>
+</div>
+<div class="fare-total" id="fareTotalDisplay">SAR 0.00</div>
+</div>
+<div class="seat-map-section">
+<div class="carriage-header">
+<div class="carriage-title">Carriage Selection Matrix</div>
+<div class="carriage-legend">
+<div class="legend-item"><div class="legend-box lb-avail"></div>Available</div>
+<div class="legend-item"><div class="legend-box lb-occ"></div>Occupied</div>
+<div class="legend-item"><div class="legend-box lb-sel"></div>Selected</div>
+</div>
+</div>
+<div class="seat-grid-matrix" id="seatMatrixArea"></div>
+<div class="seat-status-banner" id="seatStatusIndicator">
+NO SEAT ALLOCATED
+</div>
+</div>
+<button class="action-process-btn" id="btnProcessTx">Authorize Secure Payment</button>
+</div>
+<div class="history-section">
+<div class="wizard-header">
+<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+Recent Travel Log
+</div>
+<table class="history-table">
+<thead>
+<tr>
+<th>Booking Ref</th>
+<th>Route Path</th>
+<th>Date</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TKT-8992</td>
+<td>Riyadh ➔ Dammam</td>
+<td>Oct 12, 2025</td>
+<td><span class="status-label status-completed">Completed</span></td>
+</tr>
+<tr>
+<td>TKT-1044</td>
+<td>Jeddah ➔ Riyadh</td>
+<td>Nov 05, 2025</td>
+<td><span class="status-label status-completed">Completed</span></td>
+</tr>
+<tr>
+<td>TKT-9921</td>
+<td>Riyadh ➔ Qassim</td>
+<td>Mar 22, 2026</td>
+<td><span class="status-label status-upcoming">Upcoming</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<div class="overlay-modal" id="invoiceModal">
+<div class="ticket-invoice-card">
+<div class="invoice-top">
+<div class="invoice-barcode">
+<svg viewBox="0 0 24 24"><path d="M3 4h2v16H3V4zm4 0h1v16H7V4zm3 0h3v16h-3V4zm4 0h2v16h-2V4zm3 0h1v16h-1V4zm2 0h2v16h-2V4z"/></svg>
+</div>
+<h2>Boarding Pass</h2>
+<p id="txReference">REF: PNR-XXXXXX</p>
+</div>
+<div class="invoice-body">
+<div class="invoice-grid">
+<div class="invoice-data-block">
+<div class="invoice-data-label">Passenger</div>
+<div class="invoice-data-val" id="txName">User</div>
+</div>
+<div class="invoice-data-block">
+<div class="invoice-data-label">Travel Date</div>
+<div class="invoice-data-val" id="txDate">YYYY-MM-DD</div>
+</div>
+<div class="invoice-data-block">
+<div class="invoice-data-label">Route Vector</div>
+<div class="invoice-data-val" id="txRoute">Origin - Dest</div>
+</div>
+<div class="invoice-data-block">
+<div class="invoice-data-label">Seat Allocation</div>
+<div class="invoice-data-val" id="txSeat" style="color: var(--accent-action);">A00</div>
+</div>
+</div>
+<div class="invoice-data-block" style="text-align: center; border-color: var(--accent-action); background-color: var(--surface-white);">
+<div class="invoice-data-label">Total Transaction Value</div>
+<div class="invoice-data-val" id="txTotal" style="font-size: 2.5rem;">SAR 0.00</div>
+</div>
+</div>
+<div class="invoice-footer">
+<button class="btn-secondary" id="btnCloseModal">Close & Return</button>
+<button class="action-process-btn" style="flex: 1.5; margin: 0; padding: 1.2rem; font-size: 1rem;" onclick="window.print()">Download PDF</button>
+</div>
+</div>
+</div>
+<script>
+const ENGINE_CONFIG = {
+ratePerKm: 0.45,
+taxMultiplier: 1.15,
+selectedSeat: null,
+finalFare: 0
+};
+function initializeSeatMatrix() {
+const grid = document.getElementById('seatMatrixArea');
+grid.innerHTML = '';
+const rowChars = ['A', 'B', 'C', 'D'];
+let counter = 1;
+for (let r = 0; r < 4; r++) {
+for (let n = 1; n <= 14; n++) {
+const seat = document.createElement('div');
+seat.className = 'seat-node';
+const seatId = `${rowChars[r]}${n.toString().padStart(2, '0')}`;
+seat.textContent = seatId;
+if (counter % 4 === 0 || counter % 11 === 0 || counter % 19 === 0) {
+seat.classList.add('occupied');
+} else {
+seat.addEventListener('click', function() {
+document.querySelectorAll('.seat-node').forEach(el => el.classList.remove('selected'));
+this.classList.add('selected');
+ENGINE_CONFIG.selectedSeat = seatId;
+const statusTxt = document.getElementById('seatStatusIndicator');
+statusTxt.textContent = `ALLOCATION LOCKED: SEAT ${seatId}`;
+statusTxt.style.color = 'var(--surface-white)';
+statusTxt.style.backgroundColor = 'var(--accent-action)';
+statusTxt.style.borderColor = 'var(--accent-action)';
+});
+}
+grid.appendChild(seat);
+counter++;
+}
+}
+}
+function computeFare() {
+const originNode = document.getElementById('nodeOrigin');
+const destNode = document.getElementById('nodeDest');
+const classNode = document.getElementById('nodeClass');
+const kmOrig = parseInt(originNode.options[originNode.selectedIndex].getAttribute('data-km'));
+const kmDest = parseInt(destNode.options[destNode.selectedIndex].getAttribute('data-km'));
+let routeDistance = Math.abs(kmDest - kmOrig);
+if (routeDistance === 0) routeDistance = 500;
+const multiplier = parseFloat(classNode.value);
+const baseFare = routeDistance * ENGINE_CONFIG.ratePerKm * multiplier;
+ENGINE_CONFIG.finalFare = baseFare * ENGINE_CONFIG.taxMultiplier;
+document.getElementById('fareTotalDisplay').textContent = `SAR ${ENGINE_CONFIG.finalFare.toFixed(2)}`;
+}
+function executeTransaction() {
+if (!ENGINE_CONFIG.selectedSeat) {
+alert("TRANSACTION HALTED: Carriage seat allocation is mandatory prior to payment.");
+return;
+}
+const dTravel = document.getElementById('dateTravel').value;
+if(!dTravel) {
+alert("TRANSACTION HALTED: Travel date must be specified.");
+return;
+}
+const oNode = document.getElementById('nodeOrigin');
+const dNode = document.getElementById('nodeDest');
+const pnr = 'PNR-' + Math.floor(Math.random() * 899999 + 100000);
+document.getElementById('txReference').textContent = `REF: ${pnr}`;
+document.getElementById('txRoute').textContent = `${oNode.options[oNode.selectedIndex].text} ➔ ${dNode.options[dNode.selectedIndex].text}`;
+document.getElementById('txDate').textContent = dTravel;
+document.getElementById('txSeat').textContent = ENGINE_CONFIG.selectedSeat;
+document.getElementById('txTotal').textContent = `SAR ${ENGINE_CONFIG.finalFare.toFixed(2)}`;
+const storedUser = localStorage.getItem('userName');
+if(storedUser) document.getElementById('txName').textContent = storedUser;
+document.getElementById('invoiceModal').classList.add('active');
+}
+function setupCoreEvents() {
+document.getElementById('nodeOrigin').addEventListener('change', computeFare);
+document.getElementById('nodeDest').addEventListener('change', computeFare);
+document.getElementById('nodeClass').addEventListener('change', computeFare);
+document.getElementById('btnProcessTx').addEventListener('click', executeTransaction);
+document.getElementById('btnCloseModal').addEventListener('click', () => {
+document.getElementById('invoiceModal').classList.remove('active');
+setTimeout(() => window.location.reload(), 500);
+});
+document.getElementById('triggerLogout').addEventListener('click', () => window.location.href = '/login');
+const d = new Date();
+d.setDate(d.getDate() + 1);
+document.getElementById('dateTravel').valueAsDate = d;
+const uName = localStorage.getItem('userName');
+if(uName) {
+document.getElementById('displayUserName').textContent = uName;
+document.getElementById('avatarInitial').textContent = uName.charAt(0).toUpperCase();
+}
+}
+function bootPortal() {
+initializeSeatMatrix();
+computeFare();
+setupCoreEvents();
+}
+document.addEventListener('DOMContentLoaded', bootPortal);
+</script>
+</body>
+</html>
